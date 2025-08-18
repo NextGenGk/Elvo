@@ -1,0 +1,17 @@
+# This is a config for E2B sandbox template.
+# You can use template ID (9yi42omlwnl7uvp8etyu) or template name (elvo-test-1) to create a sandbox:
+
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox("elvo-test-1") # Sync sandbox
+# sandbox = await AsyncSandbox.create("elvo-test-1") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('elvo-test-1')
+
+team_id = "1fcb7abf-b889-432c-b4de-5ab307a31ddd"
+start_cmd = "compile_page.sh"
+dockerfile = "e2b.Dockerfile"
+template_name = "elvo-test-1"
+template_id = "9yi42omlwnl7uvp8etyu"

@@ -1,12 +1,18 @@
 import { success } from "zod";
 import { inngest } from "./client";
+import { Sandbox } from "@e2b/code-interpreter";
+import { getSandbox } from "./utils";
 
 import { openai, createAgent, gemini } from "@inngest/agent-kit";
 
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
   { event: "test/hello.world" },
-  async ({ event }) => {
+  async ({ event, step }) => {
+    const sandboxId = await step.run("get-sandbox-id", async () => {
+      const sandbox = await Sandbox.create("elvo-test-1");
+      return sandbox.sandboxId;
+    })
     // download file
     // Create a new agent with a system prompt (you can add optional tools, too)
     const codeAgent = createAgent({
@@ -30,13 +36,20 @@ export const helloWorld = inngest.createFunction(
     If user input is ambiguous, make reasonable assumptions and note them briefly.
     Never produce pseudo-code unless explicitly asked — always provide real Next.js/React code.
     `,
-      model: gemini({ model: "gemini-2.5-flash" }),
+      model: gemini({ model: "gemini-1.5-flash" }),
     });
     
 
     const { output } = await codeAgent.run(
       `Summarize the following text: ${event.data.value}`,
     );
-    return {output};
+
+    const sandboxUrl = await step.run("get-sandbox-url", async () => {
+      const sandbox = await getSandbox(sandboxId);
+      const host = sandbox.getHost(3000);
+      return `http://${host}`;
+    })
+    
+    return {output, sandboxUrl};
   },
 );
