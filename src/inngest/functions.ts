@@ -2,12 +2,18 @@ import { z } from "zod";
 import { inngest } from "./client";
 import { Sandbox } from "@e2b/code-interpreter";
 import { getSandbox, lastAssistantTextMessageContent } from "./utils";
-import { createAgent, gemini, createTool, createNetwork } from "@inngest/agent-kit";
+import { createAgent, gemini, createTool, createNetwork, type Tool } from "@inngest/agent-kit";
 import { PROMPT } from "@/prompt";
+import { prisma } from "@/lib/db";
 
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
+interface AgentState {
+  summary: string;
+  files: { [path: string]: string };
+}
+
+export const codeAgentFunction = inngest.createFunction(
+  { id: "code-agent" },
+  { event: "code-agent/run" },
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("elvo-test-1");
@@ -15,7 +21,7 @@ export const helloWorld = inngest.createFunction(
     })
     // download file
     // Create a new agent with a system prompt (you can add optional tools, too)
-    const codeAgent = createAgent({
+    const codeAgent = createAgent<AgentState>({
       name: "code-agent",
       description: "An expert coding assistant",
       system: PROMPT,
@@ -51,7 +57,7 @@ export const helloWorld = inngest.createFunction(
               content: z.string().describe("File content"),
             })).describe("Array of files to create or update"),
           }),
-          handler: async ({ files }, { step }) => {
+          handler: async ({ files }, { step } : Tool.Options<AgentState>) => {
             return await step?.run("createOrUpdateFiles", async () => {
               try {
                 const sandbox = await getSandbox(sandboxId);
@@ -106,10 +112,16 @@ export const helloWorld = inngest.createFunction(
       }
     });
 
-    const network = createNetwork({
+    const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codeAgent],
       maxIter: 15,
+      state: {
+        data: {
+          summary: "",
+          files: {}
+        }
+      },
       router: async ({ network }) => {
         const summary = network.state.data.summary;
 
@@ -123,10 +135,9 @@ export const helloWorld = inngest.createFunction(
 
     const result = await network.run(event.data.value);
 
-
-    await codeAgent.run(
-      `Summarize the following text: ${event.data.value}`,
-    );
+    const isError =
+       !result.state.data.summary ||
+       Object.keys(result.state.data.files || {}).length === 0;
 
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
@@ -134,11 +145,39 @@ export const helloWorld = inngest.createFunction(
       return `https://${host}`;
     })
 
+    await step.run("save-result", async () => {
+      if (isError) {
+        return await prisma.message.create({
+          data: {
+            content: "Something went wrong: No summary or files generated",
+            role: "ASSISTANT",
+            type: "ERROR",
+          },
+        });
+      }
+      
+      return await prisma.message.create({
+        data: {
+          content: result.state.data.summary,
+          role: "ASSISTANT",
+          type: "RESULT",
+          fragment: {
+            create: {
+              name: "Fragment",
+              sandboxUrl: sandboxUrl,
+              title: "Fragment",
+              files: result.state.data.files || {},
+            }
+          }
+        }
+      })
+    });
+
     return { 
       url: sandboxUrl,
       title: "Fragment",
       files: result.state.data.files,
       summary: result.state.data.summary,
-    };
+    }
   },
-);
+)
