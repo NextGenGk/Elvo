@@ -4,6 +4,7 @@ import "./globals.css";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
+import "@/components/code-view/code-theme.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
