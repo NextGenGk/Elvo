@@ -17,6 +17,9 @@ export const MessagesContainer = ({
     activeFragment,
     setActiveFragment }: Props) => {
     const bottomRef = useRef<HTMLDivElement>(null);
+    const lastAssistantMessageIdRef = useRef<string | null>(null);
+    const userSelectedFragment = useRef<boolean>(false);
+
     const trpc = useTRPC();
     const { data: messages } = useSuspenseQuery(trpc.messages.getMany.queryOptions({
         projectId: projectId,
@@ -26,16 +29,40 @@ export const MessagesContainer = ({
     }
     ));
 
-    // TODO : This is causing problems with the live update
-    // useEffect(() => {
-    //     const lastAssistantMessageWithFragment = messages.findLast(
-    //         (message) => message.role === 'ASSISTANT' && message.fragment
-    //     );
+    // Set the latest fragment on initial load
+    useEffect(() => {
+        if (messages.length > 0) {
+            const lastAssistantMessage = messages.findLast(
+                (message) => message.role === 'ASSISTANT' && message.fragment
+            );
+            if (lastAssistantMessage?.fragment) {
+                setActiveFragment(lastAssistantMessage.fragment);
+                lastAssistantMessageIdRef.current = lastAssistantMessage.id;
+            }
+        }
+    }, []); // Empty dependency array to run only on mount
 
-    //     if (lastAssistantMessageWithFragment) {
-    //         setActiveFragment(lastAssistantMessageWithFragment.fragment);
-    //     }
-    // }, [messages, setActiveFragment])
+    // Handle new messages and auto-update to latest fragment if user hasn't made a selection
+    useEffect(() => {
+        const lastAssistantMessage = messages.findLast(
+            (message) => message.role === 'ASSISTANT' && message.fragment
+        );
+        
+        if (lastAssistantMessage?.fragment && 
+            lastAssistantMessage.id !== lastAssistantMessageIdRef.current &&
+            !userSelectedFragment.current) {
+            
+            lastAssistantMessageIdRef.current = lastAssistantMessage.id;
+            setActiveFragment(lastAssistantMessage.fragment);
+        }
+    }, [messages, setActiveFragment])
+    
+    // Reset user selection flag when messages change significantly (e.g., new conversation)
+    useEffect(() => {
+        if (messages.length === 0) {
+            userSelectedFragment.current = false;
+        }
+    }, [messages.length])
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,7 +83,10 @@ export const MessagesContainer = ({
                             fragment={message.fragment}
                             createdAt={message.createdAt}
                             isActiveFragment={activeFragment?.id === message.fragment?.id}
-                            onFragmentClick={() => setActiveFragment(message.fragment)}
+                            onFragmentClick={() => {
+                                userSelectedFragment.current = true;
+                                setActiveFragment(message.fragment);
+                            }}
                             type={message.type}
                         />
                     ))}
