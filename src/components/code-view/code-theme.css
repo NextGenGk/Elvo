@@ -1,0 +1,329 @@
+/* Prism.js Theme with Light/Dark Support */
+
+:root {
+  /* Light theme */
+  --code-bg: #ffffff;
+  --code-text: #1e1e1e;
+  --code-comment: #6a9955;
+  --code-keyword: #0000ff;
+  --code-string: #a31515;
+  --code-number: #098658;
+  --code-function: #795e26;
+  --code-tag: #0000ff;
+  --code-attribute: #001080;
+  --code-punctuation: #000000;
+  --code-operator: #000000;
+  --code-variable: #001080;
+  --code-class: #267f99;
+  --code-property: #001080;
+}
+
+.dark {
+  /* Dark theme */
+  --code-bg: #1e1e1e;
+  --code-text: #d4d4d4;
+  --code-comment: #6a9955;
+  --code-keyword: #569cd6;
+  --code-string: #ce9178;
+  --code-number: #b5cea8;
+  --code-function: #dcdcaa;
+  --code-tag: #569cd6;
+  --code-attribute: #9cdcfe;
+  --code-punctuation: #d4d4d4;
+  --code-operator: #d4d4d4;
+  --code-variable: #9cdcfe;
+  --code-class: #4ec9b0;
+  --code-property: #9cdcfe;
+}
+
+/* Base styles for all code blocks */
+code[class*='language-'],
+pre[class*='language-'] {
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', 'Andale Mono', monospace;
+  font-size: 14px;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.6;
+  tab-size: 4;
+  hyphens: none;
+  color: var(--code-text);
+  background: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Code blocks */
+pre[class*='language-'] {
+  background: var(--code-bg);
+  color: var(--code-text);
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 0;
+  overflow: auto;
+  position: relative;
+  border: 1px solid var(--code-punctuation, #e2e8f0);
+}
+
+/* Inline code */
+:not(pre) > code[class*='language-'] {
+  background: var(--code-bg);
+  padding: 0.2em 0.4em;
+  border-radius: 0.3em;
+  white-space: normal;
+}
+
+/* Token styles - VS Code Dark+ theme */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: var(--code-punctuation);
+}
+
+.token.namespace {
+  opacity: 0.7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: var(--code-keyword);
+}
+
+.token.number {
+  color: var(--code-number);
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: var(--code-string);
+}
+
+.token.operator,
+.token.entity,
+.token.url {
+  color: var(--code-operator);
+  background: transparent;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: var(--code-keyword);
+}
+
+.token.function,
+.token.class-name {
+  color: var(--code-function);
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: var(--code-variable);
+}
+
+.token.property {
+  color: var(--code-property);
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+/* Language-specific tokens */
+.language-javascript .token.keyword,
+.language-typescript .token.keyword,
+.language-jsx .token.keyword,
+.language-tsx .token.keyword {
+  color: #569cd6;
+}
+
+.language-javascript .token.function,
+.language-typescript .token.function,
+.language-jsx .token.function,
+.language-tsx .token.function {
+  color: #dcdcaa;
+}
+
+.language-javascript .token.class-name,
+.language-typescript .token.class-name,
+.language-jsx .token.class-name,
+.language-tsx .token.class-name {
+  color: #4ec9b0;
+}
+
+.language-typescript .token.builtin {
+  color: #4ec9b0;
+}
+
+/* JSX/TSX specific */
+.language-jsx .token.tag,
+.language-tsx .token.tag {
+  color: #569cd6;
+}
+
+.language-jsx .token.attr-name,
+.language-tsx .token.attr-name {
+  color: #9cdcfe;
+}
+
+.language-jsx .token.attr-value,
+.language-tsx .token.attr-value {
+  color: #ce9178;
+}
+
+/* Dark */
+.dark code[class*='language-'],
+.dark pre[class*='language-'] {
+  color: #e1e4e8;
+}
+
+.dark .token.comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata {
+  color: #6a737d; /* comment */
+}
+
+.dark .token.punctuation {
+  color: #e1e4e8; /* editor.foreground */
+}
+
+.dark .token.namespace {
+  opacity: 0.7;
+}
+
+.dark .token.property,
+.dark .token.tag,
+.dark .token.boolean,
+.dark .token.number,
+.dark .token.constant,
+.dark .token.symbol,
+.dark .token.deleted {
+  color: #79b8ff; /* constant, entity.name.constant, variable.other.constant */
+}
+
+.dark .token.selector,
+.dark .token.attr-name,
+.dark .token.string,
+.dark .token.char,
+.dark .token.builtin,
+.dark .token.inserted {
+  color: #9ecbff; /* string */
+}
+
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url,
+.dark .language-css .token.string,
+.dark .style .token.string {
+  color: #e1e4e8; /* editor.foreground */
+}
+
+.dark .token.atrule,
+.dark .token.attr-value,
+.dark .token.keyword {
+  color: #f97583; /* keyword */
+}
+
+.dark .token.function,
+.dark .token.class-name {
+  color: #b392f0; /* entity, entity.name */
+}
+
+.dark .token.regex,
+.dark .token.important,
+.dark .token.variable {
+  color: #ffab70; /* variable */
+}
+
+.dark .token.important,
+.dark .token.bold {
+  font-weight: bold;
+}
+
+.dark .token.italic {
+  font-style: italic;
+}
+
+.dark .token.entity {
+  cursor: help;
+}
+/* Ensure 
+proper styling for code blocks */
+.code-view pre {
+  background: var(--code-bg) !important;
+  color: var(--code-text) !important;
+  border: none !important;
+  margin: 0 !important;
+}
+
+.code-view code {
+  background: transparent !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  padding: 0 !important;
+}
+
+/* Fix for potential Tailwind conflicts */
+pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Scrollbar styling for code blocks */
+pre[class*='language-']::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+pre[class*='language-']::-webkit-scrollbar-track {
+  background: #2d2d2d;
+  border-radius: 4px;
+}
+
+pre[class*='language-']::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+pre[class*='language-']::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* Ensure text selection works properly */
+code[class*='language-'] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}

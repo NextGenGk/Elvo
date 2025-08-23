@@ -2,7 +2,7 @@ import { z } from "zod";
 import { inngest } from "./client";
 import { Sandbox } from "@e2b/code-interpreter";
 import { getSandbox, lastAssistantTextMessageContent } from "./utils";
-import { createAgent, gemini, createTool, createNetwork, type Tool } from "@inngest/agent-kit";
+import { createAgent, gemini, createTool, createNetwork } from "@inngest/agent-kit";
 import { PROMPT } from "@/prompt";
 import { prisma } from "@/lib/db";
 
@@ -25,8 +25,8 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
       description: "An expert coding assistant",
       system: PROMPT,
-      model: gemini({ 
-        model: "gemini-2.0-flash" 
+      model: gemini({
+        model: "gemini-2.0-flash"
       }),
       tools: [
         createTool({
@@ -78,7 +78,7 @@ export const codeAgentFunction = inngest.createFunction(
             if (typeof newFiles === "object" && network) {
               network.state.data.files = newFiles;
             }
-            
+
             return `Successfully created/updated ${files.length} files`;
           },
         }),
@@ -121,7 +121,7 @@ export const codeAgentFunction = inngest.createFunction(
             } else {
               // If no task_summary tags found, wrap the response in them
               const wrappedResponse = `<task_summary>\n${lastAssistantMessageText.trim()}\n</task_summary>`;
-              
+
               // Update the last message in the result to include the tags
               if (result.output && result.output.length > 0) {
                 const lastMessageIndex = result.output.findLastIndex(msg => msg.role === "assistant");
@@ -132,7 +132,7 @@ export const codeAgentFunction = inngest.createFunction(
                   }
                 }
               }
-              
+
               network.state.data.summary = lastAssistantMessageText.trim();
             }
           }
@@ -181,26 +181,26 @@ DO NOT FORGET THE <task_summary> TAGS - THEY ARE MANDATORY!`;
 
     // First run the network
     const networkResult = await network.run(enhancedPrompt);
-    
+
     // Then handle the summary in a separate step if needed
     const result = await step.run("handle-network-result", async () => {
       // If we already have a summary, return early
       if (networkResult.state.data.summary) {
         return networkResult;
       }
-      
+
       // Otherwise, generate a summary
       const summary = await step.run("generate-summary", async () => {
         const agentResult = await codeAgent.run("Please provide a brief summary of what you accomplished, wrapped in <task_summary> tags.");
         const responseText = lastAssistantTextMessageContent(agentResult);
-        
+
         if (responseText) {
           const summaryMatch = responseText.match(/<task_summary>([\s\S]*?)<\/task_summary>/);
           return summaryMatch ? summaryMatch[1].trim() : responseText.trim();
         }
         return "Task completed";
       });
-      
+
       networkResult.state.data.summary = summary;
       return networkResult;
     });
@@ -232,7 +232,7 @@ DO NOT FORGET THE <task_summary> TAGS - THEY ARE MANDATORY!`;
 
     // Clean the summary by removing task_summary tags if present
     const cleanSummary = summary.replace(/<\/?task_summary>/g, '').trim();
-    
+
     const files = result.state.data.files || {};
 
     const isError = Object.keys(files).length === 0;
@@ -254,7 +254,7 @@ DO NOT FORGET THE <task_summary> TAGS - THEY ARE MANDATORY!`;
           },
         });
       }
-      
+
       return await prisma.message.create({
         data: {
           projectId: event.data.projectId,
@@ -273,7 +273,7 @@ DO NOT FORGET THE <task_summary> TAGS - THEY ARE MANDATORY!`;
       })
     });
 
-    return { 
+    return {
       url: sandboxUrl,
       title: "Fragment",
       files: files,
