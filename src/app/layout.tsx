@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
 import "@/components/code-view/code-theme.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ErrorBoundaryProvider } from "@/components/providers/error-boundary-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,7 +46,9 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <Toaster />
-              {children}
+              <ErrorBoundaryProvider>
+                {children}
+              </ErrorBoundaryProvider>
             </ThemeProvider>
           </body>
         </html>

@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { Sandbox } from "@e2b/code-interpreter";
 import { AgentResult, TextMessage, Message } from "@inngest/agent-kit";
+import { SANDBOX_TIMEOUT } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -9,6 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export async function getSandbox(sandboxId: string) {
     const sandbox = await Sandbox.connect(sandboxId);
+    await sandbox.setTimeout(SANDBOX_TIMEOUT);
     return sandbox;
 }
 
