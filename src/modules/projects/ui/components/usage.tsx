@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { CrownIcon } from "lucide-react";
 import { formatDuration, intervalToDuration } from "date-fns";
@@ -11,7 +13,7 @@ interface Props {
     msBeforeNext: number;
 }
 
-export const Usage = async ({ points, msBeforeNext }: Props) => {
+export const Usage = ({ points, msBeforeNext }: Props) => {
     const {has} = useAuth();
     const hasProAccess = has?.({plan: "pro"});
 
