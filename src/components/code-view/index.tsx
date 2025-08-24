@@ -1,18 +1,53 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import "./code-theme.css";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
     code: string;
     lang: string;
     className?: string;
+    onChange?: (code: string) => void;
+    isEditing?: boolean;
 }
 
-export const CodeView = ({ code, lang, className = "" }: Props) => {
+export const CodeView = ({ 
+    code: initialCode, 
+    lang, 
+    className = "", 
+    onChange, 
+    isEditing = false 
+}: Props) => {
     const codeRef = useRef<HTMLElement>(null);
     const preRef = useRef<HTMLPreElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const langClass = `language-${lang}`;
+    const [editableCode, setEditableCode] = useState(initialCode);
+
+    useEffect(() => {
+        setEditableCode(initialCode);
+    }, [initialCode]);
+
+    useEffect(() => {
+        if (isEditing && textareaRef.current) {
+            textareaRef.current.focus();
+        }
+    }, [isEditing]);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (isEditing && (e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                // Trigger save via custom event that parent can listen to
+                const saveEvent = new CustomEvent('save-file');
+                window.dispatchEvent(saveEvent);
+            }
+        };
+
+        if (isEditing) {
+            document.addEventListener('keydown', handleKeyDown);
+            return () => document.removeEventListener('keydown', handleKeyDown);
+        }
+    }, [isEditing]);
 
     useEffect(() => {
         // Only run on client-side
@@ -113,7 +148,7 @@ export const CodeView = ({ code, lang, className = "" }: Props) => {
                 if (codeRef.current) {
                     // Clear any existing highlighting
                     codeRef.current.className = langClass;
-                    codeRef.current.textContent = code; // Use textContent instead of innerHTML for safety
+                    codeRef.current.textContent = editableCode; // Use textContent instead of innerHTML for safety
                     
                     // Force re-highlight
                     Prism.highlightElement(codeRef.current);
@@ -122,31 +157,54 @@ export const CodeView = ({ code, lang, className = "" }: Props) => {
                 console.error(`Failed to load syntax highlighter for ${lang}:`, error);
                 // Fallback: just show the code without highlighting
                 if (codeRef.current) {
-                    codeRef.current.textContent = code;
+                    codeRef.current.textContent = editableCode;
                 }
             }
         };
 
-        highlight();
-    }, [code, lang, langClass]);
+        // Only highlight when not editing to avoid conflicts
+        if (!isEditing) {
+            highlight();
+        }
+    }, [editableCode, lang, langClass, isEditing]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newCode = e.target.value;
+        setEditableCode(newCode);
+        onChange?.(newCode);
+    };
 
     return (
-        <div className={`code-view h-full ${className}`}>
-            <pre 
-                ref={preRef} 
-                className={`language-${lang} bg-background text-foreground rounded-md m-0 text-sm font-mono overflow-auto p-4 h-full`}
-            >
-                <code 
-                    ref={codeRef} 
-                    className={langClass}
-                    style={{
-                        background: 'transparent',
-                        color: 'inherit',
-                    }}
-                >
-                    {code}
-                </code>
-            </pre>
+        <div className={`code-view h-full ${className} relative`}>
+            <div className="h-full">
+                {isEditing ? (
+                    <textarea
+                        ref={textareaRef}
+                        value={editableCode}
+                        onChange={handleChange}
+                        className="w-full h-full p-4 font-mono text-sm bg-[#1e1e1e] text-[#d4d4d4] border-0 focus:outline-none focus:ring-0 resize-none"
+                        style={{
+                            lineHeight: '1.6',
+                            tabSize: 4,
+                            fontFamily: 'Fira Code, Cascadia Code, Consolas, Monaco, Andale Mono, monospace',
+                        }}
+                        spellCheck={false}
+                        autoFocus
+                    />
+                ) : (
+                    <pre 
+                        ref={preRef} 
+                        className={`language-${lang} bg-[#1e1e1e] rounded-md m-0 text-sm font-mono overflow-auto p-4 h-full`}
+                    >
+                        <code 
+                            ref={codeRef} 
+                            className={langClass}
+                        >
+                            {editableCode}
+                        </code>
+                    </pre>
+                )}
+            </div>
         </div>
     );
 };
