@@ -6,6 +6,7 @@ import { createAgent, gemini, createTool, createNetwork, createState } from "@in
 import { prisma } from "@/lib/db";
 import { FRAGMENT_TITLE_PROMPT, RESPONSE_PROMPT, PROMPT } from "@/prompt";
 import { parseAgentOutput } from "./utils";
+import { SANDBOX_TIMEOUT } from "./types";
 
 // Message type is now handled by the agent kit's expected format
 interface AgentState {
@@ -19,6 +20,7 @@ export const codeAgentFunction = inngest.createFunction(
     async ({ event, step }) => {
         const sandboxId = await step.run("get-sandbox-id", async () => {
             const sandbox = await Sandbox.create("elvo-test-1");
+            await sandbox.setTimeout(SANDBOX_TIMEOUT);
             return sandbox.sandboxId;
         })
 
@@ -34,6 +36,7 @@ export const codeAgentFunction = inngest.createFunction(
                 orderBy: {
                     createdAt: "asc", // Maintain conversation order
                 },
+                take: 5, // last 5 messages 
             });
 
             return messages.map(message => ({

@@ -20,15 +20,14 @@ export const UserControl = ({ showName = true }: Props) => {
                     elements: {
                         userButtonBox: "flex items-center gap-2",
                         userButtonAvatarBox: "rounded-md! size-8!",
-                        userButtonTrigger: "rounded-md!",
-                        userButtonOuterIdentifier: cn(
-                            "text-sm font-medium",
-                            currentTheme === 'dark' ? 'text-white' : 'text-foreground'
-                        ),
+                        userButtonTrigger: "rounded-md! border border-transparent hover:border-border transition-colors",
+                        userButtonOuterIdentifier: "text-sm font-medium text-foreground",
                     },
                     baseTheme: currentTheme === "dark" ? dark : undefined,
                     variables: {
-                        colorText: currentTheme === 'dark' ? '#ffffff' : '#000000',
+                        colorText: 'currentColor',
+                        colorTextSecondary: 'currentColor',
+                        colorTextOnPrimaryBackground: 'currentColor',
                     },
                 }}
             />
