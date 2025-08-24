@@ -1,23 +1,24 @@
-import { baseProcedure, createTRPCRouter } from '@/trpc/init';
 import { generateSlug } from 'random-word-slugs';
 import { inngest } from '@/inngest/client';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { TRPCError } from '@trpc/server';
+import { protectedProcedure, createTRPCRouter } from '@/trpc/init';
 
 export const projectsRouter = createTRPCRouter({
 
-    getOne: baseProcedure
+    getOne: protectedProcedure
         .input(
             z.object({
                 id: z.string().min(1, { message: 'ID is required' }),
             })
         )
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
             // Logic to get many messages
             const existingProject = await prisma.project.findUnique({
                 where: {
                     id: input.id,
+                    userId: ctx.auth.userId,
                 },
             });
 
@@ -31,10 +32,13 @@ export const projectsRouter = createTRPCRouter({
             return existingProject;
         }),
 
-    getMany: baseProcedure
-        .query(async () => {
+    getMany: protectedProcedure
+        .query(async ({ ctx }) => {
             // Logic to get many messages
             const projects = await prisma.project.findMany({
+                where: {
+                    userId: ctx.auth.userId,
+                },
                 orderBy: {
                     updatedAt: 'desc',
                 },
@@ -43,16 +47,17 @@ export const projectsRouter = createTRPCRouter({
             return projects;
         }),
 
-    create: baseProcedure
+    create: protectedProcedure
         .input(
             z.object({
                 value: z.string().min(1, { message: 'Value is required' })
                 .max(10000, { message: 'Value is too long' }),
             })
         )
-        .mutation(async ({ input }) => {
+        .mutation(async ({ input, ctx }) => {
             const createdProject = await prisma.project.create({
                 data: {
+                    userId: ctx.auth.userId,
                     name: generateSlug(2, {
                         format: 'kebab',
                     }),
@@ -75,5 +80,46 @@ export const projectsRouter = createTRPCRouter({
             });
 
             return createdProject;
+        }),
+
+    updateFragmentFiles: protectedProcedure
+        .input(
+            z.object({
+                fragmentId: z.string().min(1, { message: 'Fragment ID is required' }),
+                files: z.record(z.string(), z.string()),
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            // First, verify the fragment belongs to the user
+            const fragment = await prisma.fragment.findFirst({
+                where: {
+                    id: input.fragmentId,
+                    message: {
+                        project: {
+                            userId: ctx.auth.userId,
+                        },
+                    },
+                },
+            });
+
+            if (!fragment) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Fragment not found',
+                });
+            }
+
+            // Update the fragment files
+            const updatedFragment = await prisma.fragment.update({
+                where: {
+                    id: input.fragmentId,
+                },
+                data: {
+                    files: input.files,
+                    updatedAt: new Date(),
+                },
+            });
+
+            return updatedFragment;
         }),
 });
