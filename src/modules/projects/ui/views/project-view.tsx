@@ -16,12 +16,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FileExplorer } from "@/components/file-explorer";
 import { UserControl } from "@/components/user-control";
+import { useAuth } from "@clerk/nextjs";
 
 interface Props {
   projectId: string;
 }
 
 export const ProjectView = ({ projectId }: Props) => {
+  const { has } = useAuth();
+  const hasProAccess = has?.({ plan: "pro" });
+
   const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
   const [tabState, setTabState] = useState<"preview" | "code">("preview");
 
@@ -64,11 +68,13 @@ export const ProjectView = ({ projectId }: Props) => {
                 </TabsTrigger>
               </TabsList>
               <div className="ml-auto flex items-center gap-x-2">
-                <Button asChild size="sm" variant="tertiary">
-                  <Link href="/pricing">
-                    <CrownIcon /> Upgrade
-                  </Link>
-                </Button>
+                {!hasProAccess && (
+                  <Button asChild size="sm" variant="tertiary">
+                    <Link href="/pricing">
+                      <CrownIcon /> Upgrade
+                    </Link>
+                  </Button>
+                )}
                 <UserControl />
               </div>
             </div>
@@ -89,8 +95,8 @@ export const ProjectView = ({ projectId }: Props) => {
                       No Code Available
                     </p>
                     <p className="text-sm">
-                      {activeFragment 
-                        ? "This message doesn't contain any code files" 
+                      {activeFragment
+                        ? "This message doesn't contain any code files"
                         : "Select a message with code to view the files here"
                       }
                     </p>
@@ -98,7 +104,7 @@ export const ProjectView = ({ projectId }: Props) => {
                       <details className="mt-4 text-xs">
                         <summary>Debug Info</summary>
                         <pre className="text-left mt-2 p-2 bg-gray-100 rounded">
-                          {JSON.stringify({ 
+                          {JSON.stringify({
                             hasActiveFragment: !!activeFragment,
                             fragmentId: activeFragment?.id,
                             hasFiles: !!activeFragment?.files,
