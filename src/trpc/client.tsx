@@ -45,6 +45,23 @@ export function TRPCReactProvider(
         httpBatchLink({
           transformer: superjson,
           url: getUrl(),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          fetch: (url, options = {}) => {
+            // Ensure mutations use POST
+            const isMutation = options.method === 'GET' && options.body;
+            const method = isMutation ? 'POST' : options.method;
+            
+            return fetch(url, {
+              ...options,
+              method,
+              headers: {
+                ...(options.headers || {}),
+                'Content-Type': 'application/json',
+              },
+            });
+          },
         }),
       ],
     }),
