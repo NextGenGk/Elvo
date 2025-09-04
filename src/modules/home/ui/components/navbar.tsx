@@ -26,7 +26,12 @@ export const Navbar = () => {
                         height={24}
                         className="object-contain"
                     />
-                    <span className="text-lg font-semibold">Elvo</span>
+                    <span className={cn(
+                        "text-lg font-semibold transition-colors",
+                        isScrolled 
+                            ? "text-black hover:text-black/80 dark:text-white dark:hover:text-white/80" 
+                            : "text-white hover:text-white/80"
+                    )}>Elvo</span>
                 </Link>
 
                 <SignedOut>
@@ -44,7 +49,7 @@ export const Navbar = () => {
                     </div>
                 </SignedOut>
                 <SignedIn>
-                    <UserControl showName />
+                    <UserControl showName isScrolled={isScrolled} />
                 </SignedIn>
             </div>
         </nav>
