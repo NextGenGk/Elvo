@@ -7,30 +7,34 @@ import { cn } from "@/lib/utils";
 
 interface Props {
     showName?: boolean;
+    isScrolled?: boolean;
 }
 
-export const UserControl = ({ showName = true }: Props) => {
+export const UserControl = ({ showName = true, isScrolled = false }: Props) => {
     const currentTheme = useCustomTheme();
 
     return (
         <div className="flex items-center gap-2">
-            <UserButton
-                showName={showName}
-                appearance={{
-                    elements: {
-                        userButtonBox: "flex items-center gap-2",
-                        userButtonAvatarBox: "rounded-md! size-8!",
-                        userButtonTrigger: "rounded-md! border border-transparent hover:border-border transition-colors",
-                        userButtonOuterIdentifier: "text-sm font-medium text-foreground",
-                    },
-                    baseTheme: currentTheme === "dark" ? dark : undefined,
-                    variables: {
-                        colorText: 'currentColor',
-                        colorTextSecondary: 'currentColor',
-                        colorTextOnPrimaryBackground: 'currentColor',
-                    },
-                }}
-            />
+            <div className={isScrolled ? "text-foreground" : "text-white"}>
+                <UserButton
+                    showName={showName}
+                    appearance={{
+                        elements: {
+                            userButtonBox: "flex items-center gap-2",
+                            userButtonAvatarBox: "rounded-md! size-8!",
+                            userButtonTrigger: `rounded-md! border border-transparent hover:border-border transition-colors ${isScrolled ? 'hover:opacity-80' : 'hover:opacity-80'}`,
+                            userButtonOuterIdentifier: `text-sm font-medium ${isScrolled ? 'text-foreground hover:opacity-80' : 'text-white hover:opacity-80'}`,
+                            userButtonPopoverActionButtonText: 'text-foreground',
+                        },
+                        baseTheme: currentTheme === "dark" ? dark : undefined,
+                        variables: {
+                            colorText: 'currentColor',
+                            colorTextSecondary: 'currentColor',
+                            colorTextOnPrimaryBackground: 'currentColor',
+                        },
+                    }}
+                />
+            </div>
         </div>
     )
 }

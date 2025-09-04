@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <ClerkProvider appearance={{
       variables: {
-        colorPrimary: "#C96342"
+        colorPrimary: "var(--clerk-color-primary, #8b5cf6)"
       }
     }}>
       <TRPCReactProvider>
