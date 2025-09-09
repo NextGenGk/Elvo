@@ -65,7 +65,7 @@ export const codeAgentFunction = inngest.createFunction(
             description: "An expert coding assistant",
             system: PROMPT,
             model: gemini({
-                model: "gemini-2.5-pro"
+                model: "gemini-2.0-flash"
             }),
             tools: [
                 createTool({
@@ -211,7 +211,7 @@ export const codeAgentFunction = inngest.createFunction(
             description: "Generates a title for a code fragment based on its <task_summary>",
             system: FRAGMENT_TITLE_PROMPT,
             model: gemini({
-                model: "gemini-2.5-pro"
+                model: "gemini-2.0-flash"
             }),
         });
 
@@ -220,7 +220,7 @@ export const codeAgentFunction = inngest.createFunction(
             description: "Generates a response to the user based on the <task_summary>",
             system: RESPONSE_PROMPT,
             model: gemini({
-                model: "gemini-2.5-pro"
+                model: "gemini-2.0-flash"
             }),
         });
 
