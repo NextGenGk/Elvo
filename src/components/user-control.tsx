@@ -23,14 +23,17 @@ export const UserControl = ({ showName = true, isScrolled = false }: Props) => {
                             userButtonBox: "flex items-center gap-2",
                             userButtonAvatarBox: "rounded-md! size-8!",
                             userButtonTrigger: `rounded-md! border border-transparent hover:border-border transition-colors ${isScrolled ? 'hover:opacity-80' : 'hover:opacity-80'}`,
-                            userButtonOuterIdentifier: `text-sm font-medium ${isScrolled ? 'text-foreground hover:opacity-80' : 'text-white hover:opacity-80'}`,
+                            userButtonOuterIdentifier: `text-sm font-medium ${isScrolled ? 'text-foreground' : 'text-white'} hover:opacity-80`,
                             userButtonPopoverActionButtonText: 'text-foreground',
+                            userButtonPopoverActionButton: 'hover:bg-muted',
+                            userPreviewMainIdentifier: 'text-foreground',
+                            userButtonPopoverCard: 'bg-background',
                         },
                         baseTheme: currentTheme === "dark" ? dark : undefined,
                         variables: {
-                            colorText: 'currentColor',
-                            colorTextSecondary: 'currentColor',
-                            colorTextOnPrimaryBackground: 'currentColor',
+                            colorText: currentTheme === "dark" ? '#ffffff' : 'currentColor',
+                            colorTextSecondary: currentTheme === "dark" ? '#a1a1aa' : 'currentColor',
+                            colorTextOnPrimaryBackground: currentTheme === "dark" ? '#ffffff' : 'currentColor',
                         },
                     }}
                 />
