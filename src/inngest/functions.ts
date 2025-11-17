@@ -2,7 +2,7 @@ import { z } from "zod";
 import { inngest } from "./client";
 import { Sandbox } from "@e2b/code-interpreter";
 import { getSandbox, lastAssistantTextMessageContent } from "./utils";
-import { createAgent, gemini, createTool, createNetwork, createState } from "@inngest/agent-kit";
+import { createAgent, openai, createTool, createNetwork, createState } from "@inngest/agent-kit";
 import { prisma } from "@/lib/db";
 import { FRAGMENT_TITLE_PROMPT, RESPONSE_PROMPT, PROMPT } from "@/prompt";
 import { parseAgentOutput } from "./utils";
@@ -64,8 +64,8 @@ export const codeAgentFunction = inngest.createFunction(
             name: "code-agent",
             description: "An expert coding assistant",
             system: PROMPT,
-            model: gemini({
-                model: "gemini-2.0-flash"
+            model: openai({
+                model: "gpt-4o"
             }),
             tools: [
                 createTool({
@@ -210,8 +210,8 @@ export const codeAgentFunction = inngest.createFunction(
             name: "fragment-title-generator",
             description: "Generates a title for a code fragment based on its <task_summary>",
             system: FRAGMENT_TITLE_PROMPT,
-            model: gemini({
-                model: "gemini-2.0-flash"
+            model: openai({
+                model: "openai-2.0-flash"
             }),
         });
 
@@ -219,8 +219,8 @@ export const codeAgentFunction = inngest.createFunction(
             name: "response-generator",
             description: "Generates a response to the user based on the <task_summary>",
             system: RESPONSE_PROMPT,
-            model: gemini({
-                model: "gemini-2.0-flash"
+            model: openai({
+                model: "openai-2.0-flash"
             }),
         });
 
