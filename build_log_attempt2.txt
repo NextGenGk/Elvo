@@ -1,0 +1,59 @@
+
+> saas-vibe@0.1.0 build
+> next build
+
+ ⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+ ⚠ Invalid next.config.ts options detected: 
+ ⚠     Unrecognized key(s) in object: 'eslint'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Environments: .env
+
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 7.4s
+   Skipping validation of types
+   Collecting page data using 15 workers ...
+TypeError: The "paths[1]" argument must be of type string. Received undefined
+    at module evaluation (D:\Servers\Elvo\.next\server\chunks\_23498273._.js:7:215375)
+    at instantiateModule (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:715:9)
+    at getOrInstantiateModuleFromParent (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:738:12)
+    at Context.esmImport [as i] (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:228:20)
+    at instantiateModule (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:715:9)
+    at instantiateRuntimeModule (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:743:12)
+    at getOrInstantiateRuntimeModule (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:756:12) {
+  code: 'ERR_INVALID_ARG_TYPE',
+  clientVersion: '7.2.0'
+}
+TypeError: The "paths[1]" argument must be of type string. Received undefined
+    at module evaluation (D:\Servers\Elvo\.next\server\chunks\_69c19a05._.js:7:172260)
+    at instantiateModule (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:715:9)
+    at getOrInstantiateModuleFromParent (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:738:12)
+    at Context.esmImport [as i] (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:228:20)
+    at instantiateModule (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:715:9)
+    at instantiateRuntimeModule (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:743:12)
+    at getOrInstantiateRuntimeModule (D:\Servers\Elvo\.next\server\chunks\[turbopack]_runtime.js:756:12) {
+  code: 'ERR_INVALID_ARG_TYPE',
+  clientVersion: '7.2.0'
+}
+Error: Failed to collect configuration for /projects/[projectId]
+    at [3mignore-listed frames[23m {
+  [cause]: TypeError: The "paths[1]" argument must be of type string. Received undefined
+      at module evaluation (D:\Servers\Elvo\.next\server\chunks\ssr\_74796a53._.js:70:94579)
+      at instantiateModule (D:\Servers\Elvo\.next\server\chunks\ssr\[turbopack]_runtime.js:715:9)
+      at getOrInstantiateModuleFromParent (D:\Servers\Elvo\.next\server\chunks\ssr\[turbopack]_runtime.js:738:12)
+      at Context.esmImport [as i] (D:\Servers\Elvo\.next\server\chunks\ssr\[turbopack]_runtime.js:228:20)
+      at module evaluation (D:\Servers\Elvo\.next\server\chunks\ssr\_2939100e._.js:1:33)
+      at instantiateModule (D:\Servers\Elvo\.next\server\chunks\ssr\[turbopack]_runtime.js:715:9)
+      at getOrInstantiateModuleFromParent (D:\Servers\Elvo\.next\server\chunks\ssr\[turbopack]_runtime.js:738:12)
+      at Context.commonJsRequire [as r] (D:\Servers\Elvo\.next\server\chunks\ssr\[turbopack]_runtime.js:249:12) {
+    code: 'ERR_INVALID_ARG_TYPE',
+    clientVersion: '7.2.0'
+  }
+}
+
+> Build error occurred
+Error: Failed to collect page data for /api/trpc/[trpc]
+    at ignore-listed frames {
+  type: 'Error'
+}
